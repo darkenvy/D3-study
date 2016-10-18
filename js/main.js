@@ -1,17 +1,18 @@
+var daysAtOnce = 18;
+
 var margin = {top: 20, right: 40, bottom: 30, left: 20},
-width = 960 - margin.left - margin.right,
-height = 500 - margin.top - margin.bottom,
-barWidth = Math.floor(width / 19) - 1;
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom,
+    barWidth = Math.floor(width / 19) - 1;
 
-var x = d3.scale.linear().range([barWidth / 2, width - barWidth / 2]);
-
-var y = d3.scale.linear().range([height, 0]);
+var x = d3.scale.linear().range([barWidth / 2, width - barWidth / 2]),
+    y = d3.scale.linear().range([height, 0]);
 
 var yAxis = d3.svg.axis()
   .scale(y)
   .orient("right")
   .tickSize(-width)
-  .tickFormat(function(d) { return Math.round(d / 1e6) + "M"; });
+  .tickFormat(function(d) {console.log(d); return Math.round(d / 1000) + "k"; });
 
 // An SVG element with a bottom-right origin.
 var svg = d3.select("body").append("svg")
@@ -31,10 +32,13 @@ var allDays = svg.append("g")
 
 
 
+// -------------------- GET JSON ----------------------- //
 
 d3.json("data.json", function(error, dataset) {
   if (error) return console.log(error);
 
+  // ------------------ DATA CLEAN --------------------- //
+  
   // Find metaData from this dataset
   // This includes maximum of the chart & min/max dates
   var metaData = (function() {
@@ -54,21 +58,31 @@ d3.json("data.json", function(error, dataset) {
   })();
 
   // clean the data structure
-  var data = [];
+  var cData = [];
   dataset.forEach(function(item) {
     var j = {};
-    data.push(j[item.date] = [item.users, item.searches])
+    j.data = [item.users, item.searches];
+    j.time = new Date(item.date).valueOf();
+    cData.push(j)
   });
+  
+  // sort data from newest -> oldest
+  cData.sort(function(a, b) {if (a.time < b.time) {return -1;} else {return 1;}})
+  cData.reverse();
 
 
-  console.log(metaData);
-  console.log(data);
-
-
+  // Show only the last week on boot
+  var data = cData.splice(0, daysAtOnce);
 
   // Update the scale domains.
   x.domain([1920, 2000]);
-  y.domain([0, d3.max(data, function(d) { return d.searches; })]);
+  y.domain([0, d3.max(data, function(d) {return d.data[0] > d.data[1] ? d.data[0] : d.data[1]; })]);
+  
+  // ----------------------------------------------------- //
+
+
+
+  // -------------------- DECORATE ----------------------- //
 
   // Add an axis to show the population values.
   svg.append("g")
@@ -79,25 +93,34 @@ d3.json("data.json", function(error, dataset) {
     .filter(function(value) { return !value; })
     .classed("zero", true);
 
+    // Add labels to show age (separate; not animated).
+  // svg.selectAll(".age")
+  //   .data(d3.range(0, metaData.maxValue, 5))
+  //   .enter().append("text")
+  //   .attr("class", "age")
+  //   .attr("x", function(n) { return x(metaData.maxValue - n); })
+  //   .attr("y", height + 4)
+  //   .attr("dy", ".71em")
+  //   .text(function(age) { return age; });
+
+
+
+  // ----------------- PRIMARY DRAWING ------------------- //
+
   var day = allDays.selectAll('.days')
     .data(data)
     .enter()
     .append('g')
     .attr('class', 'days')
-    .attr('transform', function(d, i) { return "translate(" + i*48 + ",0)"; })
+    .attr('transform', function(d, i) { return "translate(" + (40+(i*48)) + ",0)"; })
     
   day.selectAll('.days')
-    .data(function(d) {console.log(d); return d})
+    .data(function(d) {return d.data})
     .enter()
     .append('rect')
     .attr("x", -barWidth / 2)
     .attr("width", barWidth)
-    // .attr("height", function(j, i) {console.log(j, i); return 100})
-    // .attr("y", function(j, i) {return 100})
     .attr("height", function(j, i) {return (j/metaData.maxValue)*450})
     .attr("y", function(j, i) {return 450-((j/metaData.maxValue)*450)})
-
-
-
-
+    .text('test')
 });

@@ -13,7 +13,7 @@ var yAxis = d3.svg.axis()
     .scale(y)
     .orient("right")
     .tickSize(-width)
-    .tickFormat(function(d) { return Math.round(d / 1e6) + "M"; });
+    .tickFormat(function(d) { console.log(d); return Math.round(d / 1e6) + "M"; });
 
 // An SVG element with a bottom-right origin.
 var svg = d3.select("body").append("svg")
@@ -49,7 +49,7 @@ d3.csv("population.csv", function(error, data) {
 
   // Update the scale domains.
   x.domain([year1 - age1, year1]);
-  y.domain([0, d3.max(data, function(d) { return d.people; })]);
+  // y.domain([0, d3.max(data, function(d) { return d.people; })]);
 
   // Produce a map from year and birthyear to [male, female].
   data = d3.nest()
@@ -108,7 +108,7 @@ d3.csv("population.csv", function(error, data) {
     update();
   });
 
-  /*function update() {
+  function update() {
     if (!(year in data)) return;
     title.text(year);
 
@@ -122,5 +122,5 @@ d3.csv("population.csv", function(error, data) {
         .duration(750)
         .attr("y", y)
         .attr("height", function(value) { return height - y(value); });
-  }*/
+  }
 });
