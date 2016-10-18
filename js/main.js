@@ -1,9 +1,9 @@
-var daysAtOnce = 15;
+var daysAtOnce = 7;
 
 var margin = {top: 20, right: 40, bottom: 30, left: 20},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom,
-    barWidth = Math.floor(width / 19) - 1;
+    barWidth = Math.floor(width / daysAtOnce) - 1;
 
 var x = d3.scale.linear().range([barWidth / 2, width - barWidth / 2]),
     y = d3.scale.linear().range([height, 0]);
@@ -15,7 +15,7 @@ var yAxis = d3.svg.axis()
   .tickFormat(function(d) {console.log(d); return Math.round(d / 1000) + "k"; });
 
 // An SVG element with a bottom-right origin.
-var svg = d3.select("body").append("svg")
+var svg = d3.select(".graph").append("svg")
   .attr("width", width + margin.left + margin.right)
   .attr("height", height + margin.top + margin.bottom)
   .append("g")
@@ -99,7 +99,7 @@ d3.json("data.json", function(error, dataset) {
     // .data(d3.range(0, metaData.maxValue, 5))
     .enter().append("text")
     .attr("class", "date")
-    .attr("x", function(n, i) { return (i* 48) + 40 })
+    .attr("x", function(n, i) { return (i* barWidth) + 40 })
     // .attr("x", function(n) { return x(metaData.maxValue - n); })
     .attr("y", height + 4)
     .attr("dy", ".71em")
@@ -118,14 +118,14 @@ d3.json("data.json", function(error, dataset) {
     .enter()
     .append('g')
     .attr('class', 'days')
-    .attr('transform', function(d, i) { return "translate(" + (40+(i*48)) + ",0)"; })
+    .attr('transform', function(d, i) { return "translate(" + (40+ (i*barWidth) ) + ",0)"; })
     
   day.selectAll('.days')
     .data(function(d) {return d.data})
     .enter()
     .append('rect')
     .attr("x", -barWidth / 2)
-    .attr("width", barWidth)
+    .attr("width", barWidth-2)
     .attr("height", function(j, i) {return (j/metaData.maxValue)*450})
     .attr("y", function(j, i) {return 450-((j/metaData.maxValue)*450)})
     .text('test')
