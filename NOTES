@@ -1,0 +1,4 @@
+convert date to unix time for easy use
+  data.forEach(function(datum) {
+    datum.date = new Date(datum.date).valueOf();
+  });
