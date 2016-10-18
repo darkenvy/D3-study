@@ -1,4 +1,4 @@
-var daysAtOnce = 18;
+var daysAtOnce = 15;
 
 var margin = {top: 20, right: 40, bottom: 30, left: 20},
     width = 960 - margin.left - margin.right,
@@ -94,14 +94,20 @@ d3.json("data.json", function(error, dataset) {
     .classed("zero", true);
 
     // Add labels to show age (separate; not animated).
-  // svg.selectAll(".age")
-  //   .data(d3.range(0, metaData.maxValue, 5))
-  //   .enter().append("text")
-  //   .attr("class", "age")
-  //   .attr("x", function(n) { return x(metaData.maxValue - n); })
-  //   .attr("y", height + 4)
-  //   .attr("dy", ".71em")
-  //   .text(function(age) { return age; });
+  svg.selectAll(".labels")
+    .data(data)
+    // .data(d3.range(0, metaData.maxValue, 5))
+    .enter().append("text")
+    .attr("class", "date")
+    .attr("x", function(n, i) { return (i* 48) + 40 })
+    // .attr("x", function(n) { return x(metaData.maxValue - n); })
+    .attr("y", height + 4)
+    .attr("dy", ".71em")
+    .text(function(date) {
+      return new Date(date.time).getMonth()+1 + "/" +
+             new Date(date.time).getDate() + "/" +
+             new Date(date.time).getFullYear().toString().slice(2);
+    });
 
 
 
