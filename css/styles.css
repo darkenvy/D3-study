@@ -57,6 +57,9 @@ label {
   width: 5em;
 }
 
+#range {
+  margin-top: 25px;
+}
 
 /* Mouseover Tooltip */
 
@@ -68,7 +71,7 @@ label {
     padding: 10px;
     position: absolute;
     z-index: 1000;
-    width:130px;
-    height:40px;
+    /*width:130px;*/
+    /*height:40px;*/
     border-radius: 5px;
 }

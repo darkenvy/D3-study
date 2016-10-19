@@ -4,17 +4,29 @@
   <title>Point Inside Sample</title>
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/vendor/jquery-ui.css">
+  <link rel="stylesheet" href="css/vendor/foundation.min.css">
 </head>
 <body>
   <div class="graph"></div>
-  <div>
-    <button id="lastWeek">Latest Week</button>
-    <button id="lastMonth">Latest Month</button>
-    <span>Start Date: <input type="text" id="datepicker1" value="08/24/2016"></span>
-    <span>End Date: <input type="text" id="datepicker2" value="07/06/2016"></span>
-    <button id="range">Show Range</button>
+  
+  <!-- A div containing the options -->
+  <div class="row">
+    <div class="small-12 columns text-center">
+      <button class="button" id="lastWeek">Latest Week</button>
+      <button class="button" id="lastMonth">Latest Month</button>
+    </div>
+    <div class="small-offset-2 small-4 columns">
+      <span>Start Date: <input type="text" id="datepicker1" value="08/24/2016"></span>
+    </div>
+    <div class="small-4 columns">
+      <span>End Date: <input type="text" id="datepicker2" value="07/06/2016"></span>
+    </div>
+    <div class="small-2 columns">
+      <button class="button" id="range">Show Range</button>
+    </div>
   </div>
   
+  <!-- Initiate the tooltip span here -->
   <span class="tooltip"></span>
       
   </div>
