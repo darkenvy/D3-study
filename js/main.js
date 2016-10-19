@@ -14,16 +14,13 @@ var yAxis = d3.svg.axis()
   .tickSize(-width)
   .tickFormat(function(d) {return Math.round(d / 1000) + "k"; });
 
-// An SVG element with a bottom-right origin.
 var svg = d3.select(".graph").append("svg")
   .attr("width", width + margin.left + margin.right)
   .attr("height", height + margin.top + margin.bottom)
   .append("g")
   .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-// A sliding container to hold the bars
 var allDays = svg.append("g").attr("class", "allDays");
-var infoBox = svg.append('g')
 
 // Init date pickers
 // Really the only time I use JQ
@@ -34,6 +31,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
 // -------------------- GET JSON ----------------------- //
 
+// var externalUrl = "https://gist.githubusercontent.com/evanjacobs/c150c0375030dc4de65e9b95784dc894/raw/35c5f455b147703db3989df0cb90f5781c3b312f/usage_data.json"
+// d3.json(externalUrl, function(error, dataset) {
 d3.json("data.json", function(error, dataset) {
   if (error) return console.log(error);
 
@@ -222,11 +221,6 @@ d3.json("data.json", function(error, dataset) {
 // ----------------- Event Listeners ------------------- //
 
 var tooltip = document.querySelectorAll('.tooltip');
-document.getElementsByClassName('allDays')[0].addEventListener('mouseover', function(e) {
-  // console.log(e.target.parentNode.childNodes[0].__data__,
-  //             e.target.parentNode.childNodes[1].__data__);
-});
-
 document.getElementsByClassName('graph')[0].addEventListener('mousemove', function(e) {
 // document.addEventListener('mousemove', function(e) {
   var data1 = e.target.parentNode.childNodes[0].__data__,
