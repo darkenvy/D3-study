@@ -72,7 +72,7 @@ d3.json("data.json", function(error, dataset) {
 
 
   // Show only the last week on boot
-  var data = cData.splice(0, daysAtOnce);
+  var data = cData.slice(0, daysAtOnce);
 
   // Update the scale domains.
   x.domain([1920, 2000]);
@@ -131,6 +131,7 @@ d3.json("data.json", function(error, dataset) {
 
 
 
+  // ---------------------- Tools ----------------------- //
 
   // Allow the arrow keys to change the displayed year.
   window.focus();
@@ -142,55 +143,42 @@ d3.json("data.json", function(error, dataset) {
     update();
   });
 
+  document.getElementById('lastWeek').addEventListener('click', function() {
+    daysAtOnce = 7;
+    update();
+  });
+  document.getElementById('lastMonth').addEventListener('click', function() {
+    daysAtOnce = 30;
+    update();
+  });
+
+
+  // --------------- Update Function -------------------- //
   function update() {
-    // if (!(year in data)) return;
-    // title.text(year);
-
-    // allDays.transition()
-    //   .duration(750)
-    //   .attr("transform", "translate(" + (x(0) - x(1)) + ",0)");
+    // Clear the graph
     data = [];
+    d3.selectAll('.allDays')
+      .selectAll('.days')
+      .data(d3.range(0,0,0))
+      .exit()
+      .remove()
 
-    data = cData.splice(0, daysAtOnce);
+    // Make new assessments
+    data = cData.slice(0, daysAtOnce);
     testData = data
     barWidth = Math.floor(width / daysAtOnce) - 1;
     console.log(data);
     
-    // d3.selectAll("rect")
-    //   .data(function(d) {console.log(d);return d;})
-    //   .attr("width", 20)
-
-    // day = allDays.selectAll('.days')
-    //   .data(data)
-    //   .enter()
-    //   .append('g')
-    //   .attr('class', 'days')
-    //   .attr('transform', function(d, i) {return "translate(" + (40+ (i*barWidth) ) + ",0)"; })
-
-    // var uDay = d3
-    //   .selectAll('.days')
-    //   .data(data)
-
-    // uDay.exit().remove()
-    // uDay.enter()
-    //   .append("rect")
-    //   .attr("x", -barWidth / 2)
-    //   .attr("width", barWidth-2)
-    //   .attr("height", function(j, i) {return 20})
-    //   .attr("y", function(j, i) {return 20})
-    
-    var uDay = d3.selectAll('.allDays')
+    // Redraw
+    d3.selectAll('.allDays')
       .selectAll('.days')
       .data(data)
-
-    uDay.exit().remove()
-
-    uDay.enter()
+      .enter()
       .append('g')
       .attr('class', 'days')
       .attr('transform', function(d, i) { return "translate(" + (40+ (i*barWidth) ) + ",0)"; })
       .selectAll('rect')
-      .data(function(d) {return d.data})
+      .data(function(d) {console.log(d);return d.data})
       .enter()
       .append('rect')
       .attr("x", -barWidth / 2)
@@ -198,23 +186,6 @@ d3.json("data.json", function(error, dataset) {
       .attr("height", function(j, i) {return (j/metaData.maxValue)*450})
       .attr("y", function(j, i) {return 450-((j/metaData.maxValue)*450)})
 
-
-    // day.selectAll("rect")
-    //   .data(function(d){console.log(d);return d;})
-    //   .attr("y", y)
-    //   .attr("height", function(value) {console.log("height", value); return 20 });
-
-    // day.selectAll("rect")
-    //   .data(function(d) {console.log(d);return d.data; })
-    //   .enter()
-    //   .append('rect')
-    //   .attr("x", -barWidth / 2)
-    //   .attr("width", barWidth-2)
-    //   .attr("height", function(j, i) {return (j/metaData.maxValue)*450})
-    //   .attr("y", function(j, i) {return 450-((j/metaData.maxValue)*450)})
-      // .transition()
-      // .duration(750)
-      // .attr("y", y)
-      // .attr("height", function(value) { return height - y(value); });
   }
 });
+
