@@ -35,8 +35,7 @@ svg {
   fill: #666;
 }
 
-.days,
-.date {
+.days, .date {
   text-anchor: middle;
 }
 
@@ -51,4 +50,25 @@ rect {
 
 rect:first-child {
   fill: #1f77b4;
+}
+
+label {
+  display: inline-block;
+  width: 5em;
+}
+
+
+/* Mouseover Tooltip */
+
+.tooltip {
+    /*display: none;*/
+    color: white;
+    background: rgba(0,0,0,0.3);
+    margin-left: 28px;
+    padding: 10px;
+    position: absolute;
+    z-index: 1000;
+    width:130px;
+    height:40px;
+    border-radius: 5px;
 }

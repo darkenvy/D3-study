@@ -1,9 +1,9 @@
-var daysAtOnce = 7;
-
+// --------------- Init Variables --------------------- //
 var margin = {top: 20, right: 40, bottom: 30, left: 20},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom,
-    barWidth = Math.floor(width / daysAtOnce) - 1;
+    barWidth = Math.floor(width / daysAtOnce) - 1,
+    daysAtOnce = 7;
 
 var x = d3.scale.linear().range([barWidth / 2, width - barWidth / 2]),
     y = d3.scale.linear().range([height, 0]);
@@ -21,10 +21,16 @@ var svg = d3.select(".graph").append("svg")
   .append("g")
   .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-// A sliding container to hold the bars by birthyear.
-var allDays = svg.append("g")
-  .attr("class", "allDays");
+// A sliding container to hold the bars
+var allDays = svg.append("g").attr("class", "allDays");
+var infoBox = svg.append('g')
 
+// Init date pickers
+// Really the only time I use JQ
+document.addEventListener("DOMContentLoaded", function() {
+  $("#datepicker1").datepicker();
+  $("#datepicker2").datepicker();
+});
 
 // -------------------- GET JSON ----------------------- //
 
@@ -76,63 +82,7 @@ d3.json("data.json", function(error, dataset) {
 
 
 
-  // -------------------- DECORATE ----------------------- //
-
-  // // Add an axis to show the population values.
-  // svg.append("g")
-  //   .attr("class", "y axis")
-  //   .attr("transform", "translate(" + width + ",0)")
-  //   .call(yAxis)
-  //   .selectAll("g")
-  //   .filter(function(value) { return !value; })
-  //   .classed("zero", true);
-
-  //   // Add labels to show age (separate; not animated).
-  // svg.selectAll(".labels")
-  //   .data(data)
-  //   // .data(d3.range(0, metaData.maxValue, 5))
-  //   .enter().append("text")
-  //   .attr("class", "date")
-  //   .attr("x", function(n, i) { return (i* barWidth) + 40 })
-  //   // .attr("x", function(n) { return x(metaData.maxValue - n); })
-  //   .attr("y", height + 4)
-  //   .attr("dy", ".71em")
-  //   .text(function(date) {
-  //     return new Date(date.time).getMonth()+1 + "/" +
-  //            new Date(date.time).getDate() + "/" +
-  //            new Date(date.time).getFullYear().toString().slice(2);
-  //   });
-
-
-
-  // ----------------- PRIMARY DRAWING ------------------- //
-
-  // var day = allDays.selectAll('.days')
-  //   .data(data)
-  //   .enter()
-  //   .append('g')
-  //   .attr('class', 'days')
-  //   .attr('transform', function(d, i) { return "translate(" + (40+ (i*barWidth) ) + ",0)"; })
-    
-  // day.selectAll('.days')
-  //   .data(function(d) {return d.data})
-  //   .enter()
-  //   .append('rect')
-  //   .attr("x", -barWidth / 2)
-  //   .attr("width", barWidth-2)
-  //   .attr("height", function(j, i) {return (j/metaData.maxValue)*450})
-  //   .attr("y", function(j, i) {return 450-((j/metaData.maxValue)*450)})
-
-
-
-
-
-
-
-
-
-
-  // ---------------------- Tools ----------------------- //
+  // ----------------- Event Functions ------------------- //
 
   // Run on page load
   // This trims duplicate code
@@ -268,12 +218,25 @@ d3.json("data.json", function(error, dataset) {
   }
 });
 
-document.addEventListener("DOMContentLoaded", function() {
-  $("#datepicker1").datepicker();
-  $("#datepicker2").datepicker();
-})
 
-document.getElementsByClassName('allDays')[0].addEventListener('click', function(e) {
-  console.log(e.target.parentNode.childNodes[0].__data__,
-              e.target.parentNode.childNodes[1].__data__);      
+// ----------------- Event Listeners ------------------- //
+
+var tooltip = document.querySelectorAll('.tooltip');
+document.getElementsByClassName('allDays')[0].addEventListener('mouseover', function(e) {
+  // console.log(e.target.parentNode.childNodes[0].__data__,
+  //             e.target.parentNode.childNodes[1].__data__);
 });
+
+document.getElementsByClassName('graph')[0].addEventListener('mousemove', function(e) {
+// document.addEventListener('mousemove', function(e) {
+  var data1 = e.target.parentNode.childNodes[0].__data__,
+      data2 = e.target.parentNode.childNodes[1].__data__
+  if (!data1 || !data2) {tooltip[0].hidden = true} // Hide tooltip if details are undefined
+  else {tooltip[0].hidden = false} // Show if details exist
+  tooltip[0].style.left = e.pageX - 100 + 'px';
+  tooltip[0].style.top = e.pageY - 80 + 'px';
+  tooltip[0].innerHTML = `
+     <b>Users: </b>` + data1 + '<br>' +
+    `<b>Searches: </b>` + data2;
+});
+
