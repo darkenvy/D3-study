@@ -26,11 +26,6 @@ var allDays = svg.append("g")
   .attr("class", "allDays");
 
 
-
-
-
-
-
 // -------------------- GET JSON ----------------------- //
 
 d3.json("data.json", function(error, dataset) {
@@ -127,6 +122,13 @@ d3.json("data.json", function(error, dataset) {
     .attr("width", barWidth-2)
     .attr("height", function(j, i) {return (j/metaData.maxValue)*450})
     .attr("y", function(j, i) {return 450-((j/metaData.maxValue)*450)})
+
+
+
+
+
+
+
 
 
 
@@ -261,3 +263,8 @@ document.addEventListener("DOMContentLoaded", function() {
   $("#datepicker1").datepicker();
   $("#datepicker2").datepicker();
 })
+
+document.getElementsByClassName('allDays')[0].addEventListener('click', function(e) {
+  console.log(e.target.parentNode.childNodes[0].__data__,
+              e.target.parentNode.childNodes[1].__data__);      
+});
