@@ -3,12 +3,16 @@
 <head>
   <title>Point Inside Sample</title>
   <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/vendor/jquery-ui.css">
 </head>
 <body>
   <div class="graph"></div>
   <div>
     <button id="lastWeek">Latest Week</button>
     <button id="lastMonth">Latest Month</button>
+    <span>Start Date: <input type="text" id="datepicker1" value="08/24/2016"></span>
+    <span>End Date: <input type="text" id="datepicker2" value="07/06/2016"></span>
+    <button id="range">Show Range</button>
   </div>
 
 </body>
@@ -18,6 +22,8 @@
 <!--   Looks better / performance   -->
 <!-- –––––––––––––––––––––––––––––– -->
 <script src="js/vendor/d3.v3.js"></script>
+<script src="js/vendor/jquery-1.12.4.js"></script>
+<script src="js/vendor/jquery-ui.js"></script>
 <script src="js/main.js"></script>
 <!-- <script src="js/example.js"></script> -->
 </html>

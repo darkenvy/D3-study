@@ -30,7 +30,6 @@ var allDays = svg.append("g")
 
 
 
-var testData;
 
 // -------------------- GET JSON ----------------------- //
 
@@ -140,35 +139,71 @@ d3.json("data.json", function(error, dataset) {
       case 37: daysAtOnce -= 1; break;
       case 39: daysAtOnce += 1; break;
     }
+    clearGraph();
+    data = cData.slice(0, daysAtOnce);
+    barWidth = Math.floor(width / daysAtOnce) - 1;
     update();
   });
 
   document.getElementById('lastWeek').addEventListener('click', function() {
+    clearGraph();
     daysAtOnce = 7;
+    data = cData.slice(0, daysAtOnce);
+    barWidth = Math.floor(width / daysAtOnce) - 1;
     update();
   });
   document.getElementById('lastMonth').addEventListener('click', function() {
+    clearGraph();
     daysAtOnce = 30;
+    data = cData.slice(0, daysAtOnce);
+    barWidth = Math.floor(width / daysAtOnce) - 1;
+    update();
+  });
+  document.getElementById('range').addEventListener('click', function() {
+    var date1 = new Date(document.getElementById('datepicker1').value).valueOf(),
+        date2 = new Date(document.getElementById('datepicker2').value).valueOf();
+    
+    daysAtOnce = parseInt((date1 - date2) / 1000 / 60 / 60 / 24); // Converts unix time to days
+    
+    // Find the first and last indicies
+    // So we can slice the data accordingly between only those two dates
+    var firstIdx = 0,
+        lastIdx = 0;
+    cData.forEach(function(item, idx) {
+      var theDay = parseInt(new Date(item.time).valueOf() / 1000 / 86400);
+      if (theDay == parseInt(date1 / 1000 / 86400) ) { firstIdx = idx}
+      if (theDay == parseInt(date2 / 1000 / 86400) ) { lastIdx = idx}
+    });
+
+    console.log("indicies", firstIdx, lastIdx, "daysAtOnce", daysAtOnce);
+
+    clearGraph();
+    data = cData.slice(firstIdx, lastIdx);
+    barWidth = Math.floor(width / daysAtOnce) - 1;
     update();
   });
 
 
   // --------------- Update Function -------------------- //
-  function update() {
-    // Clear the graph
+  
+  function clearGraph() {
     data = [];
+    svg.selectAll('.axis')
+      .data(d3.range(0,0,0))
+      .exit()
+      .remove()
+    svg.selectAll(".date")
+      .data(d3.range(0,0,0))
+      .exit()
+      .remove()
     d3.selectAll('.allDays')
       .selectAll('.days')
       .data(d3.range(0,0,0))
       .exit()
       .remove()
+  }
 
-    // Make new assessments
-    data = cData.slice(0, daysAtOnce);
-    testData = data
-    barWidth = Math.floor(width / daysAtOnce) - 1;
-    console.log(data);
-    
+  function update() {
     // Redraw
     d3.selectAll('.allDays')
       .selectAll('.days')
@@ -178,7 +213,7 @@ d3.json("data.json", function(error, dataset) {
       .attr('class', 'days')
       .attr('transform', function(d, i) { return "translate(" + (40+ (i*barWidth) ) + ",0)"; })
       .selectAll('rect')
-      .data(function(d) {console.log(d);return d.data})
+      .data(function(d) {return d.data})
       .enter()
       .append('rect')
       .attr("x", -barWidth / 2)
@@ -186,6 +221,43 @@ d3.json("data.json", function(error, dataset) {
       .attr("height", function(j, i) {return (j/metaData.maxValue)*450})
       .attr("y", function(j, i) {return 450-((j/metaData.maxValue)*450)})
 
+    // Decorate (labels)
+    // Add an axis to show the population values.
+    svg.append("g")
+      .attr("class", "y axis")
+      .attr("transform", "translate(" + width + ",0)")
+      .call(yAxis)
+      .selectAll("g")
+      .filter(function(value) { return !value; })
+      .classed("zero", true);
+
+      // Add labels to show age (separate; not animated).
+    svg.selectAll(".labels")
+      .data(data)
+      // .data(d3.range(0, metaData.maxValue, 5))
+      .enter().append("text")
+      .attr("class", "date")
+      .attr("x", function(n, i) { return (i* barWidth) + 40 })
+      // .attr("x", function(n) { return x(metaData.maxValue - n); })
+      .attr("y", height + 4)
+      .attr("dy", ".71em")
+      .text(function(date) {
+        // Pretty print dates
+        if (daysAtOnce > 40) {
+          return new Date(date.time).getMonth()+1
+        } else if (daysAtOnce > 20) {
+          return new Date(date.time).getMonth()+1 + "/" +
+                 new Date(date.time).getDate();
+        } else {
+          return new Date(date.time).getMonth()+1 + "/" +
+                 new Date(date.time).getDate() + "/" +
+                 new Date(date.time).getFullYear().toString().slice(2);
+        }
+      });
   }
 });
 
+document.addEventListener("DOMContentLoaded", function() {
+  $("#datepicker1").datepicker();
+  $("#datepicker2").datepicker();
+})
